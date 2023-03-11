@@ -38,16 +38,16 @@ class Analyser():
             return domain[4:]
         return domain
 
-    def compare_urls(self, url1, url2):
+    def compare_domains_from_urls(self, url1, url2):
         formatted_url1 = self.find_domain_from_url(url1)
         formatted_url2 = self.find_domain_from_url(url2)
         return formatted_url1.lower() == formatted_url2.lower()
 
     def check_whitelist(self, url):
-        return any(self.compare_urls(url, w) for w in self.options.whitelist)
+        return any(self.compare_domains_from_urls(url, w) for w in self.options.whitelist)
 
     def check_blacklist(self, url):
-        return any(self.compare_urls(url, w) for w in self.options.blacklist)
+        return any(self.compare_domains_from_urls(url, w) for w in self.options.blacklist)
 
     def analyse(self):
         use_whitelist = self.options.whitelist is not None
