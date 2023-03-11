@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "plink-url"
-version = "1.0.1"
+version = "1.0.2"
 description = "Recursively analyse a URL and it's children"
 readme = "README.md"
 authors = [{ name = "Jessica Ward", email = "jessicawardiom@gmail.com" }]
