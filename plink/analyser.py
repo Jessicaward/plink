@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
-from result import Result
+from plink.result import Result
 from termcolor import colored
 
 class Analyser():
