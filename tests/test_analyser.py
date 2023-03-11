@@ -82,5 +82,37 @@ class TestAnalyser(unittest.TestCase):
         result = a.compare_domains_from_urls(test_url1, test_url2)
         self.assertFalse(result)
 
+    def test_check_whitelisted_url(self):
+        whitelisted_url = "https://jessica.im/"
+        test_url = "https://jessica.im/Blog"
+        o = options.Options(whitelist=[whitelisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_whitelist(test_url)
+        self.assertTrue(result)
+
+    def test_check_non_whitelisted_url(self):
+        whitelisted_url = "https://jessica.im/"
+        test_url = "https://github.com/Jessicaward"
+        o = options.Options(whitelist=[whitelisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_whitelist(test_url)
+        self.assertFalse(result)
+
+    def test_check_blacklisted_url(self):
+        blacklisted_url = "https://jessica.im/"
+        test_url = "https://github.com/Jessicaward"
+        o = options.Options(blacklist=[blacklisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_blacklist(test_url)
+        self.assertTrue(result)
+
+    def test_check_blacklisted_url(self):
+        blacklisted_url = "https://jessica.im/"
+        test_url = "https://jessica.im/Blog"
+        o = options.Options(blacklist=[blacklisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_blacklist(test_url)
+        self.assertFalse(result)
+
 if __name__ == '__main__':
     unittest.main()

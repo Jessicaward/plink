@@ -47,7 +47,7 @@ class Analyser():
         return any(self.compare_domains_from_urls(url, w) for w in self.options.whitelist)
 
     def check_blacklist(self, url):
-        return any(self.compare_domains_from_urls(url, w) for w in self.options.blacklist)
+        return not any(self.compare_domains_from_urls(url, w) for w in self.options.blacklist)
 
     def analyse(self):
         use_whitelist = self.options.whitelist is not None
@@ -64,7 +64,7 @@ class Analyser():
             # This list will be empty by the time the step ends
             for url in urls_in_step:
                 # Check the blacklist doesn't contain the url OR the whitelist does contain it
-                if (use_whitelist and self.check_whitelist(url)) or (use_blacklist and not self.check_blacklist(url)):
+                if (use_whitelist and self.check_whitelist(url)) or (use_blacklist and self.check_blacklist(url)):
                     result = self.analyse_url(url, depth)
                     analysed_urls.append(url)
                     urls_to_analyse.remove(url)
