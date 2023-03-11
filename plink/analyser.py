@@ -1,5 +1,5 @@
 import requests
-import urllib.parse
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from result import Result
 from termcolor import colored
@@ -17,7 +17,7 @@ class Analyser():
         soup = BeautifulSoup(html, features="html.parser")
         link_tags = soup.find_all('a')
         links = [tag['href'] for tag in link_tags]
-        absolute_links = [urllib.parse.urljoin(base_url, link) for link in links]
+        absolute_links = [urljoin(base_url, link) for link in links]
         return absolute_links
 
     def analyse_url(self, url, depth):
@@ -31,6 +31,20 @@ class Analyser():
                 print(colored((depth * "  ") + str(ex), "red"))
             print(colored((depth * "  ") + "Fail: " + url, "red"))
             return Result(status="Fail")
+    
+    def find_domain_from_url(self, url):
+        domain = urlparse(url).netloc
+        if domain[:4] == "www.":
+            return domain[4:]
+        return domain
+
+    def compare_urls(self, url1, url2):
+        formatted_url1 = self.find_domain_from_url(url1)
+        formatted_url2 = self.find_domain_from_url(url2)
+        return formatted_url1.lower() == formatted_url2.lower()
+
+    def check_whitelist(self, url):
+        return any(self.compare_urls(url, w) for w in self.options.whitelist)
 
     def analyse(self):
         analysed_urls = []
