@@ -46,15 +46,30 @@ class Analyser():
     def check_whitelist(self, url):
         return any(self.compare_urls(url, w) for w in self.options.whitelist)
 
+    def check_blacklist(self, url):
+        return any(self.compare_urls(url, w) for w in self.options.blacklist)
+
     def analyse(self):
+        use_whitelist = self.options.whitelist is not None
+        use_blacklist = self.options.blacklist is not None
+        # Define default lists to analyse
         analysed_urls = []
         urls_to_analyse = [self.options.start_url]
-        for depth in range(0, self.options.recursion_depth):
+
+        # Each "step" is the next level of depth
+        for depth in range(0, self.options.depth):
             urls_in_step = urls_to_analyse[:] # Copy list without reference
+
+            # Each "step" contains a list of urls to analyse
+            # This list will be empty by the time the step ends
             for url in urls_in_step:
-                result = self.analyse_url(url, depth)
-                analysed_urls.append(url)
-                urls_to_analyse.remove(url)
-                for url_to_analyse in result.links:
-                    if url_to_analyse not in urls_to_analyse:
-                        urls_to_analyse.append(url_to_analyse)
+                # Check the blacklist doesn't contain the url OR the whitelist does contain it
+                if (use_whitelist and self.check_whitelist(url)) or (use_blacklist and not self.check_blacklist):
+                    result = self.analyse_url(url, depth)
+                    analysed_urls.append(url)
+                    urls_to_analyse.remove(url)
+
+                    # The URL has been analysed, remove it from this step and add it to the analysed list
+                    for url_to_analyse in result.links:
+                        if url_to_analyse not in urls_to_analyse:
+                            urls_to_analyse.append(url_to_analyse)
