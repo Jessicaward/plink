@@ -8,11 +8,11 @@ def initialise(arguments):
 def main():
     #Retrieve, validate and parse arguments from CLI
     parser = argparse.ArgumentParser()
-    parser.add_argument("start_url", type=str, help="URL to analyse")
-    parser.add_argument("--whitelist", "-w", help="Domains to analyse (default is the start_url domain). Ignored if blacklist is specified", nargs="*")
-    parser.add_argument("--blacklist", "-b", help="Domains to blacklist", nargs="*")
+    parser.add_argument("start_url", type=str, help="Initial URL to analyse")
+    parser.add_argument("--whitelist", "-w", help="Domains to analyse. Can only be provided if blacklist is missing", nargs="*")
+    parser.add_argument("--blacklist", "-b", help="Domains to skip, Can only be provided if whitelist is missing", nargs="*")
     parser.add_argument("--depth", "-d", type=int, help="Number of analysis cycles", const=3, default=3, nargs="?")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Give more output")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Give more output (including potential errors, and a list of individual URL scans)")
     args = parser.parse_args()
 
     #Both whitelist and blacklist cannot be specified
