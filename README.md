@@ -7,6 +7,21 @@
 
 Recursive link analyser, written in Python
 
+## Installation
+To install plink, run the following command in your terminal:
+```bash
+python -m pip install --upgrade pip wheel
+python -m pip install plink-url
+```
+
+To upgrade plink, run the following command in your terminal:
+```bash
+python -m pip install --upgrade pip wheel
+python -m pip install --upgrade plink-url
+```
+
+If this does not work, you may have to use the `python3` or `pip3` commands instead.
+
 ## Examples
 Basic example:
 ```bash
