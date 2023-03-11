@@ -70,17 +70,18 @@ class Analyser():
             # Each "step" contains a list of urls to analyse
             # This list will be empty by the time the step ends
             for url in urls_in_step:
-                # Check the blacklist doesn't contain the url OR the whitelist does contain it
-                if (use_whitelist and self.check_whitelist(url)) \
-                or (use_blacklist and self.check_blacklist(url)) \
-                or (not use_blacklist and not use_whitelist):
-                    result = self.analyse_url(url, depth)
-                    analysed_urls.append((url, result.status))
-                    urls_to_analyse.remove(url)
+                if url not in [url_result[0] for url_result in analysed_urls]:
+                    # Check the blacklist doesn't contain the url OR the whitelist does contain it
+                    if (use_whitelist and self.check_whitelist(url)) \
+                    or (use_blacklist and self.check_blacklist(url)) \
+                    or (not use_blacklist and not use_whitelist):
+                        result = self.analyse_url(url, depth)
+                        analysed_urls.append((url, result.status))
+                        urls_to_analyse.remove(url)
 
-                    # The URL has been analysed, remove it from this step and add it to the analysed list
-                    for url_to_analyse in result.links:
-                        if url_to_analyse not in urls_to_analyse:
-                            urls_to_analyse.append(url_to_analyse)
+                        # The URL has been analysed, remove it from this step and add it to the analysed list
+                        for url_to_analyse in result.links:
+                            if url_to_analyse not in urls_to_analyse:
+                                urls_to_analyse.append(url_to_analyse)
         
         self.print_summary(analysed_urls)
