@@ -24,12 +24,13 @@ class Analyser():
         try:
             content = self.retrieve_content_by_url(url)
             links = self.retrieve_links_from_html(content, url)
-            print(colored((depth * "  ") + "Success: " + url, "green"))
+            if self.options.verbose:
+                print(colored((depth * "  ") + "Success: " + url, "green"))
             return Result(links=links, status="Success")
         except Exception as ex:
             if self.options.verbose:
                 print(colored((depth * "  ") + str(ex), "red"))
-            print(colored((depth * "  ") + "Fail: " + url, "red"))
+                print(colored((depth * "  ") + "Fail: " + url, "red"))
             return Result(status="Fail")
     
     def find_domain_from_url(self, url):
