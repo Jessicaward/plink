@@ -1,4 +1,6 @@
 # plink
+[![PyPI version](https://badge.fury.io/py/plink-url.svg)](https://badge.fury.io/py/plink-url)
+
 Recursive link analyser, written in Python
 
 ## Examples
