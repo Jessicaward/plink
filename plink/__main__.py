@@ -1,6 +1,23 @@
 import argparse
+import pkg_resources
 from analyser import Analyser
 from options import Options
+from termcolor import colored
+
+def print_splash_screen(verbose):
+    logo = '''
+       _ _       _    
+      | (_)     | |   
+ _ __ | |_ _ __ | | __
+| '_ \| | | '_ \| |/ /
+| |_) | | | | | |   < 
+| .__/|_|_|_| |_|_|\_\ 
+| |                   
+|_|                   
+    '''
+    print(colored(logo, "magenta"))
+    if verbose:
+        print(colored("plink v" + pkg_resources.get_distribution('plink-url').version, "cyan"))
 
 def initialise(arguments):
     return Options(whitelist=arguments.whitelist, depth=arguments.depth, blacklist=arguments.blacklist, start_url=arguments.start_url, verbose=arguments.verbose)
@@ -18,6 +35,8 @@ def main():
     #Both whitelist and blacklist cannot be specified
     if args.whitelist is not None and args.blacklist is not None:
         parser.error("Either provide a whitelist, or a blacklist, you cannot specify both")
+
+    print_splash_screen(args.verbose)
 
     options = initialise(args)
     a = Analyser(options)
