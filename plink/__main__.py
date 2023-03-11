@@ -11,7 +11,7 @@ def main():
     parser.add_argument("start_url", type=str, help="URL to analyse")
     parser.add_argument("--whitelist", "-w", help="Domains to analyse (default is the start_url domain). Ignored if blacklist is specified", nargs="*")
     parser.add_argument("--blacklist", "-b", help="Domains to blacklist", nargs="*")
-    parser.add_argument("--depth", "-d", type=int, help="Number of analysis cycles")
+    parser.add_argument("--depth", "-d", type=int, help="Number of analysis cycles", const=3, default=3, nargs="?")
     parser.add_argument("--verbose", "-v", action="store_true", help="Give more output")
     args = parser.parse_args()
 
