@@ -48,6 +48,12 @@ class Analyser():
 
     def check_blacklist(self, url):
         return not any(self.compare_domains_from_urls(url, w) for w in self.options.blacklist)
+    
+    def print_summary(self, urls_analysed):
+        number_of_successful_urls = sum(1 for url in urls_analysed if url[1] == "Success")
+        number_of_failed_urls = len(urls_analysed) - number_of_successful_urls
+        print(colored(f"{number_of_successful_urls} successful URLs", "green"))
+        print(colored(f"{number_of_failed_urls} failed URLs", "red"))
 
     def analyse(self):
         use_whitelist = self.options.whitelist is not None
@@ -66,10 +72,12 @@ class Analyser():
                 # Check the blacklist doesn't contain the url OR the whitelist does contain it
                 if (use_whitelist and self.check_whitelist(url)) or (use_blacklist and self.check_blacklist(url)):
                     result = self.analyse_url(url, depth)
-                    analysed_urls.append(url)
+                    analysed_urls.append((url, result.status))
                     urls_to_analyse.remove(url)
 
                     # The URL has been analysed, remove it from this step and add it to the analysed list
                     for url_to_analyse in result.links:
                         if url_to_analyse not in urls_to_analyse:
                             urls_to_analyse.append(url_to_analyse)
+        
+        self.print_summary(analysed_urls)
