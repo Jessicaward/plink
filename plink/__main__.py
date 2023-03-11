@@ -1,7 +1,7 @@
 import argparse
 import pkg_resources
-from analyser import Analyser
-from options import Options
+from plink.analyser import Analyser
+from plink.options import Options
 from termcolor import colored
 
 def print_splash_screen(verbose):

@@ -1,5 +1,5 @@
 import unittest
-from plink import options, analyser
+from plink import analyser, options
 
 def create_default_analyser():
     o = options.Options()
