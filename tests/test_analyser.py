@@ -2,8 +2,8 @@ import unittest
 from plink import analyser, options
 
 def create_default_analyser():
-    o = options.Options()
-    a = analyser.Analyser(options)
+    o = options.Options(allow_insecure=False, verbose=False, depth=3, whitelist=[], blacklist=[])
+    a = analyser.Analyser(o)
     return a
 
 class TestAnalyser(unittest.TestCase):
@@ -114,13 +114,43 @@ class TestAnalyser(unittest.TestCase):
         result = a.check_blacklist(test_url)
         self.assertFalse(result)
 
-    def test_check_url_valid_url(self):
+    def test_check_url_valid_secure_url(self):
         url = "https://jessica.im/"
         whitelisted_url = "https://jessica.im/"
         o = options.Options(whitelist=[whitelisted_url])
         a = analyser.Analyser(o)
         result = a.check_url_is_allowed(url)
         self.assertTrue(result)
+
+    def test_check_url_valid_insecure_url(self):
+        url = "http://jessica.im/"
+        whitelisted_url = "http://jessica.im/"
+        o = options.Options(whitelist=[whitelisted_url], allow_insecure=True)
+        a = analyser.Analyser(o)
+        result = a.check_url_is_allowed(url)
+        self.assertTrue(result)
+
+    def test_check_url_valid_secure_url_with_flag(self):
+        url = "https://jessica.im/"
+        whitelisted_url = "https://jessica.im/"
+        o = options.Options(whitelist=[whitelisted_url], allow_insecure=True)
+        a = analyser.Analyser(o)
+        result = a.check_url_is_allowed(url)
+        self.assertTrue(result)
+
+    def test_check_url_invalid_insecure_url(self):
+        url = "http://jessica.im/"
+        whitelisted_url = "http://jessica.im/"
+        o = options.Options(whitelist=[whitelisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_url_is_allowed(url)
+        self.assertFalse(result)
+
+    def test_check_url_invalid_url(self):
+        url = "mailto:jessica@jessica.im"
+        a = create_default_analyser()
+        result = a.check_url_is_allowed(url)
+        self.assertFalse(result)
 
 if __name__ == '__main__':
     unittest.main()
