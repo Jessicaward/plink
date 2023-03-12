@@ -1,3 +1,4 @@
+import time
 import requests
 from plink import consts
 from bs4 import BeautifulSoup
@@ -23,11 +24,15 @@ class Analyser():
 
     def analyse_url(self, url, depth):
         try:
+            start_time = time.time()
             content = self.retrieve_content_by_url(url)
+            end_time = time.time()
+            time_taken = end_time-start_time
+            friendly_time_taken = "{:.4f}".format(time_taken)
             links = self.retrieve_links_from_html(content, url)
             if self.options.verbose:
-                print(colored((depth * "  ") + "Success: " + url, "green"))
-            return Result(links=links, status="Success")
+                print(colored((depth * "  ") + f"[{friendly_time_taken}s] Success: " + url, "green"))
+            return Result(links=links, status="Success", time_in_s=time_taken)
         except Exception as ex:
             if self.options.verbose:
                 print(colored((depth * "  ") + str(ex), "red"))
@@ -66,7 +71,7 @@ class Analyser():
         return False
 
     def print_summary(self, urls_analysed):
-        number_of_successful_urls = sum(1 for url in urls_analysed if url[1] == "Success")
+        number_of_successful_urls = sum(1 for url in urls_analysed if url[1].status == "Success")
         number_of_failed_urls = len(urls_analysed) - number_of_successful_urls
         print(colored(f"{number_of_successful_urls} successful URLs", "green"))
         print(colored(f"{number_of_failed_urls} failed URLs", "red"))
@@ -87,7 +92,7 @@ class Analyser():
                     # Check the blacklist doesn't contain the url OR the whitelist does contain it
                     if (self.check_url_is_allowed(url)):
                         result = self.analyse_url(url, depth)
-                        analysed_urls.append((url, result.status))
+                        analysed_urls.append((url, result))
                         urls_to_analyse.remove(url)
 
                         # The URL has been analysed, remove it from this step and add it to the analysed list
