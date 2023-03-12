@@ -114,5 +114,13 @@ class TestAnalyser(unittest.TestCase):
         result = a.check_blacklist(test_url)
         self.assertFalse(result)
 
+    def test_check_url_valid_url(self):
+        url = "https://jessica.im/"
+        whitelisted_url = "https://jessica.im/"
+        o = options.Options(whitelist=[whitelisted_url])
+        a = analyser.Analyser(o)
+        result = a.check_url_is_allowed(url)
+        self.assertTrue(result)
+
 if __name__ == '__main__':
     unittest.main()
