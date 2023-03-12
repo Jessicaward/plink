@@ -7,3 +7,4 @@ class Options():
     depth: int = 3
     start_url: str = ""
     verbose: bool = False
+    allow_insecure: bool = False

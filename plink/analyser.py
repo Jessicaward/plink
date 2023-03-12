@@ -1,8 +1,10 @@
+import time
 import requests
-from urllib.parse import urljoin, urlparse
+from plink import consts
 from bs4 import BeautifulSoup
-from plink.result import Result
 from termcolor import colored
+from plink.result import Result
+from urllib.parse import urljoin, urlparse
 
 class Analyser():
     def __init__(self, options):
@@ -20,17 +22,21 @@ class Analyser():
         absolute_links = [urljoin(base_url, link) for link in links]
         return absolute_links
 
-    def analyse_url(self, url, depth):
+    def analyse_url(self, url):
         try:
+            start_time = time.time()
             content = self.retrieve_content_by_url(url)
+            end_time = time.time()
+            time_taken = end_time-start_time
+            friendly_time_taken = "{:.4f}".format(time_taken)
             links = self.retrieve_links_from_html(content, url)
             if self.options.verbose:
-                print(colored((depth * "  ") + "Success: " + url, "green"))
-            return Result(links=links, status="Success")
+                print(colored(f"[{friendly_time_taken}s] Success: " + url, "green"))
+            return Result(links=links, status="Success", time_in_s=time_taken)
         except Exception as ex:
             if self.options.verbose:
-                print(colored((depth * "  ") + str(ex), "red"))
-                print(colored((depth * "  ") + "Fail: " + url, "red"))
+                print(colored(str(ex), "red"))
+                print(colored("Fail: " + url, "red"))
             return Result(status="Fail")
     
     def find_domain_from_url(self, url):
@@ -49,16 +55,28 @@ class Analyser():
 
     def check_blacklist(self, url):
         return not any(self.compare_domains_from_urls(url, w) for w in self.options.blacklist)
-    
+
+    def check_url_is_allowed(self, url):
+        use_whitelist = self.options.whitelist is not None
+        use_blacklist = self.options.blacklist is not None
+
+        if (use_whitelist and self.check_whitelist(url)) \
+        or (use_blacklist and self.check_blacklist(url)) \
+        or (not use_blacklist and not use_whitelist):
+            parsed = urlparse(url)
+            schemes = consts.ALLOWED_SCHEMES_INSECURE if self.options.allow_insecure else consts.ALLOWED_SCHEMES
+            return any(s == parsed.scheme.lower() for s in schemes)
+
+        # URL is either in blacklist, or not in whitelist
+        return False
+
     def print_summary(self, urls_analysed):
-        number_of_successful_urls = sum(1 for url in urls_analysed if url[1] == "Success")
+        number_of_successful_urls = sum(1 for url in urls_analysed if url[1].status == "Success")
         number_of_failed_urls = len(urls_analysed) - number_of_successful_urls
         print(colored(f"{number_of_successful_urls} successful URLs", "green"))
         print(colored(f"{number_of_failed_urls} failed URLs", "red"))
 
     def analyse(self):
-        use_whitelist = self.options.whitelist is not None
-        use_blacklist = self.options.blacklist is not None
         # Define default lists to analyse
         analysed_urls = []
         urls_to_analyse = [self.options.start_url]
@@ -72,11 +90,9 @@ class Analyser():
             for url in urls_in_step:
                 if url not in [url_result[0] for url_result in analysed_urls]:
                     # Check the blacklist doesn't contain the url OR the whitelist does contain it
-                    if (use_whitelist and self.check_whitelist(url)) \
-                    or (use_blacklist and self.check_blacklist(url)) \
-                    or (not use_blacklist and not use_whitelist):
-                        result = self.analyse_url(url, depth)
-                        analysed_urls.append((url, result.status))
+                    if (self.check_url_is_allowed(url)):
+                        result = self.analyse_url(url)
+                        analysed_urls.append((url, result))
                         urls_to_analyse.remove(url)
 
                         # The URL has been analysed, remove it from this step and add it to the analysed list
