@@ -20,7 +20,7 @@ def print_splash_screen(verbose):
         print(colored("plink v" + pkg_resources.get_distribution('plink-url').version, "cyan"))
 
 def initialise(arguments):
-    return Options(whitelist=arguments.whitelist, depth=arguments.depth, blacklist=arguments.blacklist, start_url=arguments.start_url, verbose=arguments.verbose)
+    return Options(whitelist=arguments.whitelist, depth=arguments.depth, blacklist=arguments.blacklist, start_url=arguments.start_url, verbose=arguments.verbose, allow_insecure=arguments.insecure)
 
 def main():
     #Retrieve, validate and parse arguments from CLI
@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--blacklist", "-b", help="Domains to skip, Can only be provided if whitelist is missing", nargs="*")
     parser.add_argument("--depth", "-d", type=int, help="Number of analysis cycles", const=3, default=3, nargs="?")
     parser.add_argument("--verbose", "-v", action="store_true", help="Give more output (including potential errors, and a list of individual URL scans)")
+    parser.add_argument("--insecure", "-i", action="store_true", help="Allow direction to insecure links (using HTTP)")
     args = parser.parse_args()
 
     #Both whitelist and blacklist cannot be specified
