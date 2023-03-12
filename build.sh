@@ -7,4 +7,5 @@ python3 -m build
 echo "Checking build..."
 twine check dist/*
 
+echo "Uploading build..."
 twine upload dist/*
