@@ -7,6 +7,8 @@
 
 Recursive link analyser, written in Python
 
+To contribute or to run the code yourself, please read SETUP.md.
+
 ## Installation
 To install plink, run the following command in your terminal:
 ```bash
